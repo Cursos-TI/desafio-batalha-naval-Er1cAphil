@@ -1,40 +1,91 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-// Desafio Batalha Naval - MateCheck
-// Este código inicial serve como base para o desenvolvimento do sistema de Batalha Naval.
-// Siga os comentários para implementar cada parte do desafio.
+#define TAMANHO 10
+#define NAVIO 3
+#define VAZIO 0
+#define ATINGIDO 1
+
+int tabuleiro[TAMANHO][TAMANHO];
+
+void inicializarTabuleiro() {
+    for (int i = 0; i < TAMANHO; i++) {
+        for (int j = 0; j < TAMANHO; j++) {
+            tabuleiro[i][j] = VAZIO;
+        }
+    }
+}
+
+void exibirTabuleiro() {
+    for (int i = 0; i < TAMANHO; i++) {
+        for (int j = 0; j < TAMANHO; j++) {
+            printf("%d ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void posicionarNavio(int x, int y, int tamanho, int direcao) {
+    for (int i = 0; i < tamanho; i++) {
+        if (direcao == 0) tabuleiro[x + i][y] = NAVIO; // Vertical
+        else if (direcao == 1) tabuleiro[x][y + i] = NAVIO; // Horizontal
+        else if (direcao == 2) tabuleiro[x + i][y + i] = NAVIO; // Diagonal principal
+        else tabuleiro[x + i][y - i] = NAVIO; // Diagonal inversa
+    }
+}
+
+void colocarNavios() {
+    posicionarNavio(1, 1, 3, 0);
+    posicionarNavio(4, 2, 4, 1);
+    posicionarNavio(6, 3, 3, 2);
+    posicionarNavio(2, 7, 4, 3);
+}
+
+void aplicarHabilidadeCruz(int x, int y) {
+    for (int i = 0; i < TAMANHO; i++) {
+        tabuleiro[i][y] = ATINGIDO;
+        tabuleiro[x][i] = ATINGIDO;
+    }
+}
+
+void aplicarHabilidadeCone(int x, int y) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = -i; j <= i; j++) {
+            if (x + i < TAMANHO && y + j >= 0 && y + j < TAMANHO)
+                tabuleiro[x + i][y + j] = ATINGIDO;
+        }
+    }
+}
+
+void aplicarHabilidadeOctaedro(int x, int y) {
+    for (int i = -2; i <= 2; i++) {
+        for (int j = -2; j <= 2; j++) {
+            if (abs(i) + abs(j) <= 2 && x + i >= 0 && x + i < TAMANHO && y + j >= 0 && y + j < TAMANHO)
+                tabuleiro[x + i][y + j] = ATINGIDO;
+        }
+    }
+}
 
 int main() {
-    // Nível Novato - Posicionamento dos Navios
-    // Sugestão: Declare uma matriz bidimensional para representar o tabuleiro (Ex: int tabuleiro[5][5];).
-    // Sugestão: Posicione dois navios no tabuleiro, um verticalmente e outro horizontalmente.
-    // Sugestão: Utilize `printf` para exibir as coordenadas de cada parte dos navios.
-
-    // Nível Aventureiro - Expansão do Tabuleiro e Posicionamento Diagonal
-    // Sugestão: Expanda o tabuleiro para uma matriz 10x10.
-    // Sugestão: Posicione quatro navios no tabuleiro, incluindo dois na diagonal.
-    // Sugestão: Exiba o tabuleiro completo no console, mostrando 0 para posições vazias e 3 para posições ocupadas.
-
-    // Nível Mestre - Habilidades Especiais com Matrizes
-    // Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
-    // Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
-    // Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
-
-    // Exemplos de exibição das habilidades:
-    // Exemplo para habilidade em cone:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 1 1 1 1 1
+    srand(time(NULL));
+    inicializarTabuleiro();
+    colocarNavios();
     
-    // Exemplo para habilidade em octaedro:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 0 0 1 0 0
-
-    // Exemplo para habilidade em cruz:
-    // 0 0 1 0 0
-    // 1 1 1 1 1
-    // 0 0 1 0 0
-
+    printf("Tabuleiro Inicial:\n");
+    exibirTabuleiro();
+    
+    printf("\nAplicando Habilidade Cruz (5,5):\n");
+    aplicarHabilidadeCruz(5, 5);
+    exibirTabuleiro();
+    
+    printf("\nAplicando Habilidade Cone (2,2):\n");
+    aplicarHabilidadeCone(2, 2);
+    exibirTabuleiro();
+    
+    printf("\nAplicando Habilidade Octaedro (7,7):\n");
+    aplicarHabilidadeOctaedro(7, 7);
+    exibirTabuleiro();
+    
     return 0;
 }
